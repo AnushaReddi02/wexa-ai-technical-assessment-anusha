@@ -9,6 +9,7 @@ const engine = require("ejs-mate");
 // Routes
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/products");
+const Product = require("./Models/Product");
 
 const app = express();
 
@@ -51,6 +52,33 @@ app.use(
 app.use("/", authRoutes);
 app.use("/", productRoutes);
 
+//Dashboard
+app.get("/dashboard", async (req, res) => {
+
+  const orgId = req.session.organizationId;
+
+  const products = await Product.find({
+    organizationId: orgId
+  });
+
+  const totalProducts = products.length;
+
+  const totalQuantity = products.reduce(
+    (sum, p) => sum + (p.quantity || 0), 0
+  );
+
+  const lowStockProducts = products.filter(
+    p => p.quantity <= (p.lowStockThreshold || 5)
+  );
+
+  res.render("dashboard", {
+    totalProducts,
+    totalQuantity,
+    lowStockProducts,
+    products
+  });
+
+});
 
 // Default Route
 app.get("/", (req, res) => {
