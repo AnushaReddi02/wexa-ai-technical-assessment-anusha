@@ -161,13 +161,14 @@ app.get("/logout", (req, res) => {
 
 
 // ============================
-// Default Route
+// Home / Landing Page
 // ============================
 
 app.get("/", (req, res) => {
-  res.redirect("/login");
-});
+  // Otherwise show landing page
+  res.render("home");
 
+});
 
 // ============================
 // Server Start
