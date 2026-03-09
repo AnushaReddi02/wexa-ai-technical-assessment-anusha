@@ -105,3 +105,64 @@ Delete
 </div>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(success === "productCreated"){ %>
+<script>
+Swal.fire({
+icon: "success",
+title: "Product Added",
+text: "Product created successfully!"
+});
+</script>
+<% } %>
+
+<% if(success === "productUpdated"){ %>
+<script>
+Swal.fire({
+icon: "success",
+title: "Product Updated",
+text: "Product updated successfully!"
+});
+</script>
+<% } %>
+
+<% if(success === "productDeleted"){ %>
+<script>
+Swal.fire({
+icon: "success",
+title: "Product Deleted",
+text: "Product removed successfully!"
+});
+</script>
+<% } %>
+
+<% if(error === "productCreateFailed"){ %>
+<script>
+Swal.fire({
+icon: "error",
+title: "Error",
+text: "Failed to create product"
+});
+</script>
+<% } %>
+
+<% if(error === "productUpdateFailed"){ %>
+<script>
+Swal.fire({
+icon: "error",
+title: "Error",
+text: "Failed to update product"
+});
+</script>
+<% } %>
+
+<% if(error === "productDeleteFailed"){ %>
+<script>
+Swal.fire({
+icon: "error",
+title: "Error",
+text: "Failed to delete product"
+});
+</script>
+<% } %>
