@@ -1,230 +1,218 @@
 <% layout('layouts/boilerplate') %>
 
 <style>
-
-.dashboard-card{
-transition:all 0.3s ease;
-border-radius:16px;
+.dashboard-card {
+  transition: all 0.3s ease;
+  border-radius: 16px;
 }
 
-.dashboard-card:hover{
-transform:translateY(-6px);
-box-shadow:0 12px 28px rgba(0,0,0,0.18);
-cursor:pointer;
+.dashboard-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0,0,0,0.18);
+  cursor: pointer;
 }
 
-.stat-icon{
-width:70px;
-height:70px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-size:28px;
-color:white;
+.stat-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
 }
 
-.gradient-blue{
-background:linear-gradient(135deg,#3b82f6,#6366f1);
+.gradient-blue {
+  background: linear-gradient(135deg,#3b82f6,#6366f1);
 }
 
-.gradient-green{
-background:linear-gradient(135deg,#22c55e,#16a34a);
+.gradient-green {
+  background: linear-gradient(135deg,#22c55e,#16a34a);
 }
 
-.table-hover tbody tr:hover{
-background:#f1f5ff;
-transition:0.2s;
+.table-hover tbody tr:hover {
+  background: #f1f5ff;
+  transition: 0.2s;
 }
 
-/* Chart cards */
+/* Chart Cards */
 
-.chart-card{
-height:380px;
-display:flex;
-flex-direction:column;
+.chart-card {
+  height: 380px;
+  display: flex;
+  flex-direction: column;
 }
 
-.chart-card .card-body{
-flex:1;
-display:flex;
-align-items:center;
-justify-content:center;
+.chart-card .card-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.chart-card canvas{
-max-height:260px;
-width:100% !important;
+.chart-card canvas {
+  max-height: 260px;
+  width: 100% !important;
 }
-
 </style>
 
 
 <div class="container mt-4">
 
-<h3 class="fw-bold mb-4">Inventory Dashboard</h3>
+  <h3 class="fw-bold mb-4">Inventory Dashboard</h3>
 
+  <!-- STAT CARDS -->
 
-<!-- Stat Cards -->
+  <div class="row g-4 mb-4">
 
-<div class="row g-4 mb-4">
+    <!-- Total Products -->
+    <div class="col-md-6">
+      <div class="card dashboard-card border-0 shadow">
+        <div class="card-body d-flex justify-content-between align-items-center">
 
-<div class="col-md-6">
+          <div>
+            <h6 class="text-muted">Total Products</h6>
+            <h2 class="fw-bold text-primary counter" data-target="<%= totalProducts %>">0</h2>
+          </div>
 
-<div class="card dashboard-card border-0 shadow">
+          <div class="stat-icon gradient-blue">
+            <i class="bi bi-box-seam"></i>
+          </div>
 
-<div class="card-body d-flex justify-content-between align-items-center">
+        </div>
+      </div>
+    </div>
 
-<div>
-<h6 class="text-muted">Total Products</h6>
-<h2 class="fw-bold text-primary counter" data-target="<%= totalProducts %>">0</h2>
-</div>
 
-<div class="stat-icon gradient-blue">
-<i class="bi bi-box-seam"></i>
-</div>
+    <!-- Total Inventory -->
+    <div class="col-md-6">
+      <div class="card dashboard-card border-0 shadow">
+        <div class="card-body d-flex justify-content-between align-items-center">
 
-</div>
+          <div>
+            <h6 class="text-muted">Total Inventory Quantity</h6>
+            <h2 class="fw-bold text-success counter" data-target="<%= totalQuantity %>">0</h2>
+          </div>
 
-</div>
+          <div class="stat-icon gradient-green">
+            <i class="bi bi-archive"></i>
+          </div>
 
-</div>
+        </div>
+      </div>
+    </div>
 
+  </div>
 
-<div class="col-md-6">
 
-<div class="card dashboard-card border-0 shadow">
+  <!-- CHARTS -->
 
-<div class="card-body d-flex justify-content-between align-items-center">
+  <div class="row g-4 mb-4">
 
-<div>
-<h6 class="text-muted">Total Inventory Quantity</h6>
-<h2 class="fw-bold text-success counter" data-target="<%= totalQuantity %>">0</h2>
-</div>
+    <!-- Inventory Health -->
+    <div class="col-md-6">
+      <div class="card dashboard-card chart-card shadow border-0">
 
-<div class="stat-icon gradient-green">
-<i class="bi bi-archive"></i>
-</div>
+        <div class="card-header bg-white fw-semibold">
+          Inventory Health
+        </div>
 
-</div>
+        <div class="card-body">
+          <canvas id="healthChart"></canvas>
+        </div>
 
-</div>
+      </div>
+    </div>
 
-</div>
 
-</div>
+    <!-- Product Quantity -->
+    <div class="col-md-6">
+      <div class="card dashboard-card chart-card shadow border-0">
 
+        <div class="card-header bg-white fw-semibold">
+          Product Quantity Distribution
+        </div>
 
-<!-- Charts -->
+        <div class="card-body">
+          <canvas id="productChart"></canvas>
+        </div>
 
-<div class="row g-4 mb-4">
+      </div>
+    </div>
 
-<div class="col-md-6">
+  </div>
 
-<div class="card border-0 shadow dashboard-card chart-card">
 
-<div class="card-header bg-white fw-semibold">
-Inventory Health
-</div>
+  <!-- LOW STOCK TABLE -->
 
-<div class="card-body">
-<canvas id="healthChart"></canvas>
-</div>
+  <div class="card dashboard-card shadow border-0">
 
-</div>
+    <div class="card-header bg-white fw-semibold">
+      Low Stock Products
+    </div>
 
-</div>
+    <div class="card-body">
 
+      <table class="table table-hover align-middle">
 
-<div class="col-md-6">
+        <thead class="table-light">
+          <tr>
+            <th>Product</th>
+            <th>SKU</th>
+            <th>Quantity</th>
+            <th>Threshold</th>
+            <th>Status</th>
+          </tr>
+        </thead>
 
-<div class="card border-0 shadow dashboard-card chart-card">
+        <tbody>
 
-<div class="card-header bg-white fw-semibold">
-Product Quantity Distribution
-</div>
+          <% if (lowStockProducts.length === 0) { %>
 
-<div class="card-body">
-<canvas id="productChart"></canvas>
-</div>
+            <tr>
+              <td colspan="5" class="text-center text-muted py-4">
+                All inventory levels are healthy
+              </td>
+            </tr>
 
-</div>
+          <% } %>
 
-</div>
+          <% lowStockProducts.forEach(product => { %>
 
-</div>
+            <tr>
 
+              <td class="fw-semibold"><%= product.name %></td>
 
-<!-- Low Stock Table -->
+              <td class="text-muted"><%= product.sku %></td>
 
-<div class="card border-0 shadow dashboard-card">
+              <td>
+                <span class="badge bg-danger px-3 py-2">
+                  <%= product.quantity %>
+                </span>
+              </td>
 
-<div class="card-header bg-white fw-semibold">
-Low Stock Products
-</div>
+              <td>
+                <%= product.lowStockThreshold || defaultThreshold %>
+              </td>
 
-<div class="card-body">
+              <td>
+                <span class="badge bg-warning text-dark px-3 py-2">
+                  Critical
+                </span>
+              </td>
 
-<table class="table table-hover align-middle">
+            </tr>
 
-<thead class="table-light">
+          <% }) %>
 
-<tr>
-<th>Product</th>
-<th>SKU</th>
-<th>Quantity</th>
-<th>Threshold</th>
-<th>Status</th>
-</tr>
+        </tbody>
 
-</thead>
+      </table>
 
-<tbody>
+    </div>
 
-<% if(lowStockProducts.length === 0){ %>
-
-<tr>
-<td colspan="5" class="text-center text-muted py-4">
-All inventory levels are healthy
-</td>
-</tr>
-
-<% } %>
-
-
-<% lowStockProducts.forEach(product => { %>
-
-<tr>
-
-<td class="fw-semibold"><%= product.name %></td>
-
-<td class="text-muted"><%= product.sku %></td>
-
-<td>
-<span class="badge bg-danger px-3 py-2">
-<%= product.quantity %>
-</span>
-</td>
-
-<td><%= product.lowStockThreshold %></td>
-
-<td>
-<span class="badge bg-warning text-dark px-3 py-2">
-Critical
-</span>
-</td>
-
-</tr>
-
-<% }) %>
-
-</tbody>
-
-</table>
-
-</div>
-
-</div>
+  </div>
 
 </div>
 
@@ -237,112 +225,90 @@ Critical
 const products = <%- JSON.stringify(products) %>;
 
 const lowStockCount = products.filter(p =>
-p.quantity <= (p.lowStockThreshold || 5)
+  p.quantity <= (p.lowStockThreshold || <%= defaultThreshold %>)
 ).length;
 
 const healthyStock = products.length - lowStockCount;
 
 
-// Donut Chart
+/* DONUT CHART */
 
-new Chart(document.getElementById('healthChart'),{
+new Chart(document.getElementById("healthChart"), {
 
-type:'doughnut',
+  type: "doughnut",
 
-data:{
-labels:['Healthy Stock','Low Stock'],
+  data: {
+    labels: ["Healthy Stock","Low Stock"],
+    datasets: [{
+      data: [healthyStock, lowStockCount],
+      backgroundColor: ["#22c55e","#ef4444"]
+    }]
+  },
 
-datasets:[{
-data:[healthyStock,lowStockCount],
-
-backgroundColor:[
-'#22c55e',
-'#ef4444'
-]
-
-}]
-},
-
-options:{
-responsive:true,
-maintainAspectRatio:false,
-plugins:{
-legend:{
-position:'bottom'
-}
-}
-}
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "bottom" }
+    }
+  }
 
 });
 
 
+/* BAR CHART */
 
-// Bar Chart
+const productNames = products.map(p => p.name);
+const quantities = products.map(p => p.quantity);
 
-const productNames = products.map(p=>p.name);
+new Chart(document.getElementById("productChart"), {
 
-const quantities = products.map(p=>p.quantity);
+  type: "bar",
 
+  data: {
+    labels: productNames,
+    datasets: [{
+      label: "Quantity",
+      data: quantities,
+      backgroundColor: "#3b82f6"
+    }]
+  },
 
-new Chart(document.getElementById('productChart'),{
-
-type:'bar',
-
-data:{
-labels:productNames,
-
-datasets:[{
-label:'Quantity',
-data:quantities,
-backgroundColor:'#3b82f6'
-}]
-},
-
-options:{
-responsive:true,
-maintainAspectRatio:false,
-plugins:{
-legend:{
-display:false
-}
-}
-}
+  options: {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false }
+    }
+  }
 
 });
 
 
+/* ANIMATED COUNTERS */
 
-/* Animated Counters */
-
-const counters = document.querySelectorAll('.counter');
+const counters = document.querySelectorAll(".counter");
 
 counters.forEach(counter => {
 
-const target = +counter.getAttribute('data-target');
+  const target = +counter.getAttribute("data-target");
+  let count = 0;
 
-let count = 0;
+  const update = () => {
 
-const update = () => {
+    const increment = target / 60;
 
-const increment = target / 60;
+    if (count < target) {
+      count += increment;
+      counter.innerText = Math.ceil(count);
+      setTimeout(update,20);
+    } else {
+      counter.innerText = target;
+    }
 
-if(count < target){
+  };
 
-count += increment;
-
-counter.innerText = Math.ceil(count);
-
-setTimeout(update,20);
-
-}else{
-
-counter.innerText = target;
-
-}
-
-};
-
-update();
+  update();
 
 });
 
