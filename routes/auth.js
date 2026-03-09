@@ -6,7 +6,7 @@ const User = require("../Models/User");
 const Organization = require("../Models/Organization");
 
 
-// Middleware to prevent logged-in users accessing auth pages
+// Prevent logged-in users from visiting login/signup again
 function redirectIfLoggedIn(req, res, next){
   if(req.session.userId){
     return res.redirect("/dashboard");
@@ -20,7 +20,7 @@ function redirectIfLoggedIn(req, res, next){
 // ========================
 
 router.get("/signup", redirectIfLoggedIn, (req, res) => {
-  res.render("signup");
+  res.render("signup", { error: req.query.error });
 });
 
 
@@ -34,24 +34,20 @@ router.post("/signup", async (req, res) => {
 
     const { email, password, organizationName } = req.body;
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
 
     if(existingUser){
-      return res.send("User already exists. Please login.");
+      return res.redirect("/signup?error=userExists");
     }
 
-    // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create organization
     const org = new Organization({
       name: organizationName
     });
 
     await org.save();
 
-    // Create user
     const user = new User({
       email,
       password: hashedPassword,
@@ -60,7 +56,6 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
 
-    // Start session
     req.session.userId = user._id;
     req.session.organizationId = org._id;
 
@@ -69,7 +64,7 @@ router.post("/signup", async (req, res) => {
   }catch(err){
 
     console.error(err);
-    res.send("Signup failed");
+    res.redirect("/signup?error=signupFailed");
 
   }
 
@@ -81,7 +76,7 @@ router.post("/signup", async (req, res) => {
 // ========================
 
 router.get("/login", redirectIfLoggedIn, (req, res) => {
-  res.render("login");
+  res.render("login", { error: req.query.error });
 });
 
 
@@ -98,13 +93,13 @@ router.post("/login", async (req, res) => {
     const user = await User.findOne({ email });
 
     if(!user){
-      return res.send("Invalid email or password");
+      return res.redirect("/login?error=invalidCredentials");
     }
 
     const valid = await bcrypt.compare(password, user.password);
 
     if(!valid){
-      return res.send("Invalid email or password");
+      return res.redirect("/login?error=invalidCredentials");
     }
 
     req.session.userId = user._id;
@@ -115,7 +110,7 @@ router.post("/login", async (req, res) => {
   }catch(err){
 
     console.error(err);
-    res.send("Login failed");
+    res.redirect("/login?error=loginFailed");
 
   }
 
@@ -131,7 +126,7 @@ router.get("/logout", (req, res) => {
   req.session.destroy(err => {
 
     if(err){
-      return res.send("Logout failed");
+      return res.redirect("/dashboard");
     }
 
     res.redirect("/login");
