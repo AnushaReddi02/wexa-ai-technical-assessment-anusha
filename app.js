@@ -65,9 +65,14 @@ app.use(
 );
 
 
-// Make session available in all EJS templates
+// ============================
+// Global Variables for Views
+// ============================
+
 app.use((req, res, next) => {
   res.locals.session = req.session;
+  res.locals.error = req.query.error;
+  res.locals.success = req.query.success;
   next();
 });
 
@@ -77,11 +82,9 @@ app.use((req, res, next) => {
 // ============================
 
 function isLoggedIn(req, res, next) {
-
   if (!req.session.userId) {
     return res.redirect("/login?error=loginRequired");
   }
-
   next();
 }
 
@@ -103,9 +106,8 @@ app.get("/dashboard", isLoggedIn, async (req, res) => {
 
   const orgId = req.session.organizationId;
 
-  // Get products
   const products = await Product.find({
-    organizationId: orgId,
+    organizationId: orgId
   });
 
   const totalProducts = products.length;
@@ -115,9 +117,8 @@ app.get("/dashboard", isLoggedIn, async (req, res) => {
     0
   );
 
-  // Get settings
   const setting = await Setting.findOne({
-    organizationId: orgId,
+    organizationId: orgId
   });
 
   const defaultThreshold = setting
@@ -125,7 +126,7 @@ app.get("/dashboard", isLoggedIn, async (req, res) => {
     : 5;
 
   const lowStockProducts = products.filter(
-    (p) => p.quantity <= (p.lowStockThreshold || defaultThreshold)
+    p => p.quantity <= (p.lowStockThreshold || defaultThreshold)
   );
 
   res.render("dashboard", {
@@ -133,7 +134,7 @@ app.get("/dashboard", isLoggedIn, async (req, res) => {
     totalQuantity,
     lowStockProducts,
     products,
-    defaultThreshold,
+    defaultThreshold
   });
 
 });
@@ -145,7 +146,7 @@ app.get("/dashboard", isLoggedIn, async (req, res) => {
 
 app.get("/logout", (req, res) => {
 
-  req.session.destroy((err) => {
+  req.session.destroy(err => {
 
     if (err) {
       console.log(err);
