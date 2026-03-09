@@ -6,72 +6,139 @@ const User = require("../Models/User");
 const Organization = require("../Models/Organization");
 
 
-// Signup page
-router.get("/signup", (req, res) => {
+// Middleware to prevent logged-in users accessing auth pages
+function redirectIfLoggedIn(req, res, next){
+  if(req.session.userId){
+    return res.redirect("/dashboard");
+  }
+  next();
+}
+
+
+// ========================
+// Signup Page
+// ========================
+
+router.get("/signup", redirectIfLoggedIn, (req, res) => {
   res.render("signup");
 });
 
 
-// Signup logic
+// ========================
+// Signup Logic
+// ========================
+
 router.post("/signup", async (req, res) => {
-  const { email, password, organizationName } = req.body;
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  try{
 
-  const org = new Organization({
-    name: organizationName,
-  });
+    const { email, password, organizationName } = req.body;
 
-  await org.save();
+    // Check if user already exists
+    const existingUser = await User.findOne({ email });
 
-  const user = new User({
-    email,
-    password: hashedPassword,
-    organizationId: org._id,
-  });
+    if(existingUser){
+      return res.send("User already exists. Please login.");
+    }
 
-  await user.save();
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-  req.session.userId = user._id;
-  req.session.organizationId = org._id;
+    // Create organization
+    const org = new Organization({
+      name: organizationName
+    });
 
-  res.redirect("/dashboard");
+    await org.save();
+
+    // Create user
+    const user = new User({
+      email,
+      password: hashedPassword,
+      organizationId: org._id
+    });
+
+    await user.save();
+
+    // Start session
+    req.session.userId = user._id;
+    req.session.organizationId = org._id;
+
+    res.redirect("/dashboard");
+
+  }catch(err){
+
+    console.error(err);
+    res.send("Signup failed");
+
+  }
+
 });
 
 
-// Login page
-router.get("/login", (req, res) => {
+// ========================
+// Login Page
+// ========================
+
+router.get("/login", redirectIfLoggedIn, (req, res) => {
   res.render("login");
 });
 
 
-// Login logic
+// ========================
+// Login Logic
+// ========================
+
 router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
 
-  const user = await User.findOne({ email });
+  try{
 
-  if (!user) {
-    return res.send("Invalid email");
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if(!user){
+      return res.send("Invalid email or password");
+    }
+
+    const valid = await bcrypt.compare(password, user.password);
+
+    if(!valid){
+      return res.send("Invalid email or password");
+    }
+
+    req.session.userId = user._id;
+    req.session.organizationId = user.organizationId;
+
+    res.redirect("/dashboard");
+
+  }catch(err){
+
+    console.error(err);
+    res.send("Login failed");
+
   }
 
-  const valid = await bcrypt.compare(password, user.password);
-
-  if (!valid) {
-    return res.send("Invalid password");
-  }
-
-  req.session.userId = user._id;
-  req.session.organizationId = user.organizationId;
-
-  res.redirect("/dashboard");
 });
 
 
+// ========================
 // Logout
+// ========================
+
 router.get("/logout", (req, res) => {
-  req.session.destroy();
-  res.redirect("/login");
+
+  req.session.destroy(err => {
+
+    if(err){
+      return res.send("Logout failed");
+    }
+
+    res.redirect("/login");
+
+  });
+
 });
+
 
 module.exports = router;

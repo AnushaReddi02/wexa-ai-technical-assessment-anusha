@@ -29,3 +29,25 @@
 
 </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<% if(error === "invalidCredentials"){ %>
+<script>
+Swal.fire({
+icon: "error",
+title: "Login Failed",
+text: "Invalid email or password"
+});
+</script>
+<% } %>
+
+<% if(error === "loginRequired"){ %>
+<script>
+Swal.fire({
+icon: "warning",
+title: "Login Required",
+text: "Please login to access this page"
+});
+</script>
+<% } %>
