@@ -22,16 +22,17 @@ const app = express();
 // MongoDB Connection
 // ============================
 
-const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/stockflow";
+const MONGO_URL =
+  process.env.MONGO_URL || "mongodb://127.0.0.1:27017/stockflow";
 
 mongoose
-.connect(MONGO_URL)
-.then(() => {
-console.log("MongoDB Connected Successfully");
-})
-.catch((err) => {
-console.log("MongoDB Connection Error:", err);
-});
+  .connect(MONGO_URL)
+  .then(() => {
+    console.log("MongoDB Connected Successfully");
+  })
+  .catch((err) => {
+    console.log("MongoDB Connection Error:", err);
+  });
 
 
 // ============================
@@ -56,33 +57,32 @@ app.use(express.urlencoded({ extended: true }));
 // ============================
 
 app.use(
-session({
-secret: process.env.SESSION_SECRET || "stockflowsecret",
-resave: false,
-saveUninitialized: false,
-})
+  session({
+    secret: process.env.SESSION_SECRET || "stockflowsecret",
+    resave: false,
+    saveUninitialized: false,
+  })
 );
 
 
-// Make session accessible in EJS
+// Make session available in all EJS templates
 app.use((req, res, next) => {
-res.locals.session = req.session;
-next();
+  res.locals.session = req.session;
+  next();
 });
 
 
 // ============================
-// Auth Protection Middleware
+// Authentication Middleware
 // ============================
 
-function isLoggedIn(req, res, next){
+function isLoggedIn(req, res, next) {
 
-if(!req.session.userId){
-return res.redirect("/login?error=loginRequired");
-}
+  if (!req.session.userId) {
+    return res.redirect("/login?error=loginRequired");
+  }
 
-next();
-
+  next();
 }
 
 
@@ -96,47 +96,65 @@ app.use("/", settingsRoutes);
 
 
 // ============================
-// Dashboard Route (Protected)
+// Dashboard (Protected)
 // ============================
 
 app.get("/dashboard", isLoggedIn, async (req, res) => {
 
-const orgId = req.session.organizationId;
+  const orgId = req.session.organizationId;
 
-// Get products
-const products = await Product.find({
-organizationId: orgId
+  // Get products
+  const products = await Product.find({
+    organizationId: orgId,
+  });
+
+  const totalProducts = products.length;
+
+  const totalQuantity = products.reduce(
+    (sum, p) => sum + (p.quantity || 0),
+    0
+  );
+
+  // Get settings
+  const setting = await Setting.findOne({
+    organizationId: orgId,
+  });
+
+  const defaultThreshold = setting
+    ? setting.defaultLowStockThreshold
+    : 5;
+
+  const lowStockProducts = products.filter(
+    (p) => p.quantity <= (p.lowStockThreshold || defaultThreshold)
+  );
+
+  res.render("dashboard", {
+    totalProducts,
+    totalQuantity,
+    lowStockProducts,
+    products,
+    defaultThreshold,
+  });
+
 });
 
-const totalProducts = products.length;
 
-const totalQuantity = products.reduce(
-(sum, p) => sum + (p.quantity || 0),
-0
-);
+// ============================
+// Logout Route
+// ============================
 
-// Get settings
-const setting = await Setting.findOne({
-organizationId: orgId
-});
+app.get("/logout", (req, res) => {
 
-// Default threshold fallback
-const defaultThreshold = setting
-? setting.defaultLowStockThreshold
-: 5;
+  req.session.destroy((err) => {
 
-// Find low stock products
-const lowStockProducts = products.filter(
-p => p.quantity <= (p.lowStockThreshold || defaultThreshold)
-);
+    if (err) {
+      console.log(err);
+      return res.redirect("/dashboard");
+    }
 
-res.render("dashboard", {
-totalProducts,
-totalQuantity,
-lowStockProducts,
-products,
-defaultThreshold
-});
+    res.redirect("/login?success=loggedOut");
+
+  });
 
 });
 
@@ -146,7 +164,7 @@ defaultThreshold
 // ============================
 
 app.get("/", (req, res) => {
-res.redirect("/login");
+  res.redirect("/login");
 });
 
 
@@ -157,5 +175,5 @@ res.redirect("/login");
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-console.log(`Server running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });

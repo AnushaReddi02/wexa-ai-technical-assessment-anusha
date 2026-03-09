@@ -76,7 +76,10 @@ router.post("/signup", async (req, res) => {
 // ========================
 
 router.get("/login", redirectIfLoggedIn, (req, res) => {
-  res.render("login", { error: req.query.error });
+  res.render("login", { 
+    error: req.query.error,
+    success: req.query.success
+  });
 });
 
 

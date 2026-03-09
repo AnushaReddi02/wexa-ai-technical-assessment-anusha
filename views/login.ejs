@@ -32,6 +32,16 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<% if(error === "loginRequired"){ %>
+<script>
+Swal.fire({
+icon: "warning",
+title: "Login Required",
+text: "Please login to access this page"
+});
+</script>
+<% } %>
+
 <% if(error === "invalidCredentials"){ %>
 <script>
 Swal.fire({
@@ -42,12 +52,12 @@ text: "Invalid email or password"
 </script>
 <% } %>
 
-<% if(error === "loginRequired"){ %>
+<% if(success === "loggedOut"){ %>
 <script>
 Swal.fire({
-icon: "warning",
-title: "Login Required",
-text: "Please login to access this page"
+icon: "success",
+title: "Logged Out",
+text: "You have successfully logged out"
 });
 </script>
 <% } %>
