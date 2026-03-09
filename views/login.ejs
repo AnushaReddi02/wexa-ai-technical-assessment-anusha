@@ -1,0 +1,31 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:90vh;">
+
+<div class="card shadow-lg p-4 border-0" style="width:420px">
+
+<h3 class="text-center mb-4">Login to StockFlow</h3>
+
+<form method="POST" action="/login">
+
+<div class="mb-3">
+<label class="form-label">Email</label>
+<input type="email" name="email" class="form-control" placeholder="Enter your email" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">Password</label>
+<input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+</div>
+
+<button class="btn btn-success w-100">Login</button>
+
+</form>
+
+<div class="text-center mt-3">
+<span>Don't have an account?</span>
+<a href="/signup">Sign up</a>
+</div>
+
+</div>
+</div>

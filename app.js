@@ -4,6 +4,9 @@ const express = require("express");
 const mongoose = require("mongoose");
 const session = require("express-session");
 const path = require("path");
+const authRoutes = require("./routes/auth");
+const engine = require("ejs-mate");
+
 
 const app = express();
 
@@ -20,6 +23,8 @@ mongoose
   });
 
 // View Engine Setup
+app.engine("ejs", engine);
+app.set("view engine", "ejs");
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
@@ -35,6 +40,9 @@ app.use(
     saveUninitialized: false,
   })
 );
+
+//Using auth routes
+app.use("/", authRoutes);
 
 // Default Route
 app.get("/", (req, res) => {
