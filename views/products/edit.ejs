@@ -1,0 +1,61 @@
+<% layout('layouts/boilerplate') %>
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:90vh;">
+
+<div class="card shadow-lg border-0 p-4" style="width:500px;">
+
+<h3 class="text-center mb-4">Edit Product</h3>
+
+<form action="/products/<%= product._id %>" method="POST">
+
+<div class="mb-3">
+<label class="form-label">Product Name</label>
+<input class="form-control" name="product[name]" value="<%= product.name %>" required>
+</div>
+
+<div class="mb-3">
+<label class="form-label">SKU</label>
+<input class="form-control" name="product[sku]" value="<%= product.sku %>" required>
+</div>
+
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label">Quantity</label>
+<input class="form-control" type="number" name="product[quantity]" value="<%= product.quantity %>">
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="form-label">Low Stock Threshold</label>
+<input class="form-control" type="number" name="product[lowStockThreshold]" value="<%= product.lowStockThreshold %>">
+</div>
+</div>
+
+<div class="row">
+<div class="col-md-6 mb-3">
+<label class="form-label">Cost Price</label>
+<input class="form-control" type="number" name="product[costPrice]" value="<%= product.costPrice %>">
+</div>
+
+<div class="col-md-6 mb-3">
+<label class="form-label">Selling Price</label>
+<input class="form-control" type="number" name="product[sellingPrice]" value="<%= product.sellingPrice %>">
+</div>
+</div>
+
+<div class="d-flex justify-content-between">
+
+<a href="/products" class="btn btn-outline-secondary">
+Back
+</a>
+
+<button class="btn btn-primary">
+Update Product
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
