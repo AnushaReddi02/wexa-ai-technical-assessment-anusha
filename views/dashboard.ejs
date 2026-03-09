@@ -9,7 +9,7 @@ border-radius:16px;
 
 .dashboard-card:hover{
 transform:translateY(-6px);
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
+box-shadow:0 12px 28px rgba(0,0,0,0.18);
 cursor:pointer;
 }
 
@@ -37,6 +37,26 @@ background:#f1f5ff;
 transition:0.2s;
 }
 
+/* Chart cards */
+
+.chart-card{
+height:380px;
+display:flex;
+flex-direction:column;
+}
+
+.chart-card .card-body{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.chart-card canvas{
+max-height:260px;
+width:100% !important;
+}
+
 </style>
 
 
@@ -49,7 +69,6 @@ transition:0.2s;
 
 <div class="row g-4 mb-4">
 
-
 <div class="col-md-6">
 
 <div class="card dashboard-card border-0 shadow">
@@ -58,7 +77,7 @@ transition:0.2s;
 
 <div>
 <h6 class="text-muted">Total Products</h6>
-<h2 class="fw-bold text-primary"><%= totalProducts %></h2>
+<h2 class="fw-bold text-primary counter" data-target="<%= totalProducts %>">0</h2>
 </div>
 
 <div class="stat-icon gradient-blue">
@@ -80,7 +99,7 @@ transition:0.2s;
 
 <div>
 <h6 class="text-muted">Total Inventory Quantity</h6>
-<h2 class="fw-bold text-success"><%= totalQuantity %></h2>
+<h2 class="fw-bold text-success counter" data-target="<%= totalQuantity %>">0</h2>
 </div>
 
 <div class="stat-icon gradient-green">
@@ -102,7 +121,7 @@ transition:0.2s;
 
 <div class="col-md-6">
 
-<div class="card border-0 shadow dashboard-card">
+<div class="card border-0 shadow dashboard-card chart-card">
 
 <div class="card-header bg-white fw-semibold">
 Inventory Health
@@ -119,7 +138,7 @@ Inventory Health
 
 <div class="col-md-6">
 
-<div class="card border-0 shadow dashboard-card">
+<div class="card border-0 shadow dashboard-card chart-card">
 
 <div class="card-header bg-white fw-semibold">
 Product Quantity Distribution
@@ -245,6 +264,8 @@ backgroundColor:[
 },
 
 options:{
+responsive:true,
+maintainAspectRatio:false,
 plugins:{
 legend:{
 position:'bottom'
@@ -278,12 +299,50 @@ backgroundColor:'#3b82f6'
 },
 
 options:{
+responsive:true,
+maintainAspectRatio:false,
 plugins:{
 legend:{
 display:false
 }
 }
 }
+
+});
+
+
+
+/* Animated Counters */
+
+const counters = document.querySelectorAll('.counter');
+
+counters.forEach(counter => {
+
+const target = +counter.getAttribute('data-target');
+
+let count = 0;
+
+const update = () => {
+
+const increment = target / 60;
+
+if(count < target){
+
+count += increment;
+
+counter.innerText = Math.ceil(count);
+
+setTimeout(update,20);
+
+}else{
+
+counter.innerText = target;
+
+}
+
+};
+
+update();
 
 });
 

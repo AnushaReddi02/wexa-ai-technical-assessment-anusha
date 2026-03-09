@@ -9,7 +9,11 @@ const engine = require("ejs-mate");
 // Routes
 const authRoutes = require("./routes/auth");
 const productRoutes = require("./routes/products");
+const settingsRoutes = require("./routes/Settings");
+
+// Models
 const Product = require("./Models/Product");
+const Setting = require("./Models/Setting");
 
 const app = express();
 
@@ -18,13 +22,13 @@ const app = express();
 const MONGO_URL = process.env.MONGO_URL || "mongodb://127.0.0.1:27017/stockflow";
 
 mongoose
-  .connect(MONGO_URL)
-  .then(() => {
-    console.log("MongoDB Connected Successfully");
-  })
-  .catch((err) => {
-    console.log("MongoDB Connection Error:", err);
-  });
+.connect(MONGO_URL)
+.then(() => {
+console.log("MongoDB Connected Successfully");
+})
+.catch((err) => {
+console.log("MongoDB Connection Error:", err);
+});
 
 
 // View Engine Setup
@@ -40,49 +44,66 @@ app.use(express.urlencoded({ extended: true }));
 
 // Session Configuration
 app.use(
-  session({
-    secret: process.env.SESSION_SECRET || "stockflowsecret",
-    resave: false,
-    saveUninitialized: false,
-  })
+session({
+secret: process.env.SESSION_SECRET || "stockflowsecret",
+resave: false,
+saveUninitialized: false,
+})
 );
 
 
 // Routes
 app.use("/", authRoutes);
 app.use("/", productRoutes);
+app.use("/", settingsRoutes);
 
-//Dashboard
+
+// Dashboard Route
 app.get("/dashboard", async (req, res) => {
 
-  const orgId = req.session.organizationId;
+const orgId = req.session.organizationId;
 
-  const products = await Product.find({
-    organizationId: orgId
-  });
+// Get all products
+const products = await Product.find({
+organizationId: orgId
+});
 
-  const totalProducts = products.length;
+const totalProducts = products.length;
 
-  const totalQuantity = products.reduce(
-    (sum, p) => sum + (p.quantity || 0), 0
-  );
+const totalQuantity = products.reduce(
+(sum, p) => sum + (p.quantity || 0),
+0
+);
 
-  const lowStockProducts = products.filter(
-    p => p.quantity <= (p.lowStockThreshold || 5)
-  );
+// Get settings
+const setting = await Setting.findOne({
+organizationId: orgId
+});
 
-  res.render("dashboard", {
-    totalProducts,
-    totalQuantity,
-    lowStockProducts,
-    products
-  });
+// Default threshold fallback
+const defaultThreshold = setting
+? setting.defaultLowStockThreshold
+: 5;
+
+// Find low stock products
+const lowStockProducts = products.filter(
+p => p.quantity <= (p.lowStockThreshold || defaultThreshold)
+);
+
+res.render("dashboard", {
+totalProducts,
+totalQuantity,
+lowStockProducts,
+products,
+defaultThreshold
+});
 
 });
 
+
 // Default Route
 app.get("/", (req, res) => {
-  res.redirect("/login");
+res.redirect("/login");
 });
 
 
@@ -90,5 +111,5 @@ app.get("/", (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+console.log(`Server running on port ${PORT}`);
 });

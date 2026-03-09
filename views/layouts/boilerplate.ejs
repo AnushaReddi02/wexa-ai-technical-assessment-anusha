@@ -1,24 +1,140 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>StockFlow</title>
-    <link rel="stylesheet"
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-    <link rel="stylesheet"
-     href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+<title>StockFlow</title>
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+
+<link rel="stylesheet"
+href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+<style>
+
+body{
+background:#f5f7fa;
+}
+
+/* Navbar */
+
+.navbar{
+backdrop-filter:blur(8px);
+}
+
+.navbar-brand{
+font-weight:700;
+letter-spacing:0.5px;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+/* Nav Links */
+
+.nav-link{
+color:white !important;
+margin-left:18px;
+display:flex;
+align-items:center;
+gap:6px;
+font-weight:500;
+transition:all 0.2s ease;
+}
+
+.nav-link:hover{
+color:#9ec5fe !important;
+transform:translateY(-2px);
+}
+
+/* Active Link */
+
+.nav-link.active{
+color:#4dabf7 !important;
+}
+
+/* Logout Button */
+
+.nav-link.logout{
+color:#ff6b6b !important;
+}
+
+.nav-link.logout:hover{
+color:#ff8787 !important;
+}
+
+</style>
+
 </head>
 
-<body style="background:#f5f7fa;">
+<body>
 
-<nav class="navbar navbar-dark bg-dark">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+
 <div class="container">
-<a class="navbar-brand" href="/dashboard">StockFlow</a>
+
+<a class="navbar-brand" href="/dashboard">
+<i class="bi bi-box-seam"></i> StockFlow
+</a>
+
+<button class="navbar-toggler"
+type="button"
+data-bs-toggle="collapse"
+data-bs-target="#navMenu">
+
+<span class="navbar-toggler-icon"></span>
+
+</button>
+
+
+<div class="collapse navbar-collapse justify-content-end" id="navMenu">
+
+<ul class="navbar-nav">
+
+<li class="nav-item">
+<a class="nav-link" href="/dashboard">
+<i class="bi bi-speedometer2"></i>
+Dashboard
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/products">
+<i class="bi bi-box"></i>
+Products
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" href="/settings">
+<i class="bi bi-gear"></i>
+Settings
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link logout" href="/logout">
+<i class="bi bi-box-arrow-right"></i>
+Logout
+</a>
+</li>
+
+</ul>
+
 </div>
+
+</div>
+
 </nav>
 
-<div class="container">
-    <%- body %>
+
+<div class="container mt-4">
+
+<%- body %>
+
 </div>
+
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

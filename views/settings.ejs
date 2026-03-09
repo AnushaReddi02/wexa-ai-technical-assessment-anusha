@@ -1,0 +1,49 @@
+<% layout('layouts/boilerplate') %>
+
+<style>
+
+.settings-card{
+transition:all 0.3s ease;
+border-radius:14px;
+}
+
+.settings-card:hover{
+transform:translateY(-6px);
+box-shadow:0 12px 28px rgba(0,0,0,0.18);
+}
+
+</style>
+
+
+<div class="d-flex justify-content-center align-items-center" style="min-height:80vh;">
+
+<div class="card settings-card shadow border-0 p-4" style="width:420px">
+
+<h4 class="fw-bold mb-4 text-center">Settings</h4>
+
+<form action="/settings" method="POST">
+
+<div class="mb-3">
+<label class="form-label">Default Low Stock Threshold</label>
+
+<input
+type="number"
+name="defaultLowStockThreshold"
+class="form-control"
+value="<%= setting.defaultLowStockThreshold %>"
+required>
+</div>
+
+<div class="d-grid">
+
+<button class="btn btn-primary">
+Save Settings
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
